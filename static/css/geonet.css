@@ -1,0 +1,38 @@
+#map {
+	width:100%;
+	height:600px;
+}
+
+ul {
+	list-style: none;
+	margin: 0;
+	padding-left: 0;
+	margin-top: 20px;
+	background:#FF4444;
+	height: 60px;
+}
+
+a {
+	text-decoration: none;
+	color:#fff; /*меняем цвет ссылок*/
+    padding:0px 15px; /*добавляем отступ*/
+    font-family: arial; /*меняем шрифт*/
+    line-height:60px; /*ровняем меню по вертикали*/
+    display: block; 
+    border-right: 1px solid #F36262; /*добавляем бордюр справа*/
+    -moz-transition: all 0.3s 0.01s ease; /*делаем плавный переход*/
+    -o-transition: all 0.3s 0.01s ease;
+    -webkit-transition: all 0.3s 0.01s ease;
+}
+
+a:hover {
+	background: #D43737;
+}
+
+li {
+	float: left;
+}
+
+h1 {
+	float: bottom;
+}
