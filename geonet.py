@@ -1,6 +1,6 @@
 import os
-from flask import Flask, redirect, url_for, render_template, request
-from db import get_db, close_db
+from flask import Flask, redirect, url_for, render_template, request, session, g
+from db import get_db
 
 
 
@@ -11,11 +11,12 @@ app.config.from_object(enviroment_configuration)
 
 @app.route('/')
 def index():
-   return render_template('geonet.html')
+   return render_template('base.html')
 
-@app.route('/<city>')
-def map(city):
-	return render_template('geonet.html', city=city)
+@app.route('/map')
+def map():
+	city='moscow'
+	return render_template('map.html', city=city)
 
 #добавить загрузку имени пользователя через файл и кинуть файл в gitignore
 
@@ -23,7 +24,6 @@ def map(city):
 def upload():
 	if request.method == 'POST':
 		#description = request.form['description']
-		db = get_db()
 		file = request.files['file']
 
 		hashs = str(abs(hash(file.read())))[:25] 
@@ -35,10 +35,23 @@ def upload():
 		#db.cursor().execute('INSERT INTO events (description, imgId, userId, shirota, dolgota) VALUES ()') #сделать нормальную схему таблицы, добавить авторизацию, чтобы можно было заполнить юзеров
 		db.commit()
 		cur.close()
-		close_db()
 		return redirect(url_for('map', city='moscow'))
 
 
+
+
+
+db = None
+@app.before_request
+def before_request():
+	global db
+	db = get_db()
+
+@app.teardown_appcontext
+def close_db(error=None):
+	db = g.pop('db', None)
+	if db is not None:
+		db.close()
 
 
 if __name__ == '__main__':

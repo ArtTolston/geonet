@@ -1,0 +1,24 @@
+<html>
+	<head>
+		<title>{% block title %} Geonet {% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/geonet.css') }}">
+    {% block scripts %}
+
+	{% endblock %}
+	</head>
+	<body>
+		{% block nav %}
+			<ul>
+				<li><a href="/">Главная</a></li>
+				<li><a href="/map">Карта</a></li>
+				<li><a href="/login">Авторизация</a></li>
+			</ul>
+		{% endblock %}
+
+
+		{% block content %}
+
+		{% endblock %}
+	</body>
+</html>
+              	

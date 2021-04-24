@@ -9,12 +9,6 @@ def get_db():
 	return g.db
 
 
-def close_db(e=None):
-	db = g.pop('db', None)
-	if db is not None:
-		db.close()
-
-
 def init_db():
     db = psycopg2.connect(user='udk2018', dbname='geonet')
     with open('schema.sql', 'r') as f:
