@@ -1,5 +1,7 @@
 import os
+import psycopg2.extras
 from flask import Flask, redirect, url_for, render_template, request, session, g
+from werkzeug.security import generate_password_hash, check_password_hash
 from db import get_db
 
 
@@ -18,7 +20,25 @@ def map():
 	city='moscow'
 	return render_template('map.html', city=city)
 
-#добавить загрузку имени пользователя через файл и кинуть файл в gitignore
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+	return render_template('login.html')
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+	if request.method == 'POST':
+		if len(request.form['login']) >= 0 and len(request.form['passwd1']) >= 0 and (request.form['passwd1'] == request.form['passwd2']):
+			with db.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+				cur.execute('SELECT count(*) as cnt FROM users WHERE login = %s', (request.form['login'],))
+				if cur.fetchall()[0][0] == 0:	
+					print('reg new user\n')				
+					hash = generate_password_hash(request.form['passwd1'])
+					print(f'''{hash}\n{request.form["login"]}''')
+					cur.execute('INSERT INTO users (login, passwd) VALUES (%s, %s);', (request.form['login'], hash))
+					db.commit()
+					return redirect(url_for('login'))
+	return render_template('register.html')
+
 
 @app.route('/upload', methods=['POST'])
 def upload():

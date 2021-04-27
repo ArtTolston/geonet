@@ -13,7 +13,7 @@ ul {
 	height: 60px;
 }
 
-a {
+li > a {
 	text-decoration: none;
 	color:#fff; /*меняем цвет ссылок*/
     padding:0px 15px; /*добавляем отступ*/
@@ -26,7 +26,7 @@ a {
     -webkit-transition: all 0.3s 0.01s ease;
 }
 
-a:hover {
+li > a:hover {
 	background: #D43737;
 }
 
@@ -36,4 +36,8 @@ li {
 
 h1 {
 	float: bottom;
+}
+
+.reg_log_form > p {
+	width: 100px;
 }
