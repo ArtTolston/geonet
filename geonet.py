@@ -2,7 +2,7 @@ import os
 from db import GeonetDB 
 import psycopg2 
 from login import UserLogin
-from flask_login import LoginManager, login_user, login_required
+from flask_login import LoginManager, login_user, login_required, current_user, logout_user
 from flask import Flask, redirect, url_for, render_template, request, session, g, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask.cli import with_appcontext
@@ -39,6 +39,10 @@ def login():
 			return redirect(url_for('index'))
 	return render_template('login.html')
 
+@app.route('/logout')
+def logout():
+	logout_user()
+	return redirect(url_for('login'))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -55,7 +59,7 @@ def register():
 @app.route('/profile')
 @login_required
 def profile():
-	return 
+	return render_template('profile.html', user_id=current_user.get_id())
 
 
 @login_manager.user_loader

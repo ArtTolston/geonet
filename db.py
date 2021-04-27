@@ -8,7 +8,18 @@ class GeonetDB:
 	def __init__(self, db):
 		self.__db = db
 		self.__cursor = db.cursor(cursor_factory=psycopg2.extras.DictCursor)
-		
+
+
+	def getUser(self, user_id):
+		try:
+			self.__cursor.execute('SELECT * FROM users WHERE id = %s LIMIT 1', (user_id,))
+			user = self.__cursor.fetchone()
+			if not user:
+				return False
+			return user
+		except psycopg2.Error as e:
+			print(e.pgerror)
+			return False
 
 	def addUser(self, login, hash):
 		try:
