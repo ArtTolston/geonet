@@ -1,23 +1,17 @@
 {% extends 'base.html' %}
 
+
 {% block title %}
 Map
 {% endblock %}
 
 
 {% block scripts %}
-<script src="https://api-maps.yandex.ru/2.1/?apikey=7673d05c-16a6-49b0-991b-b57bb96c83aa&lang=ru_RU" type="text/javascript"></script>
-<script src="{{ url_for('static', filename='js/init.js') }}" type="text/javascript"></script>
-<script type="text/javascript">
-	ymaps.ready(_init);
-	var city = {{city|tojson}};
-	var upload = {{ url_for('upload') |tojson}};
-	function _init() {
-		init(city, upload);
-	}
-</script>
+    <link rel = "stylesheet" href = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/>
+    <script src = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>  
 {% endblock %}
 
 {% block content %}
-<div id="map"></div>
+<div id='map'></div>
+<script src = "{{ url_for('static', filename='js/osm.js') }}" type="text/javascript"></script>
 {% endblock %}

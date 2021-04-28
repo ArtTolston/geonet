@@ -16,6 +16,7 @@ ul {
 li > a {
 	text-decoration: none;
 	color:#fff; /*меняем цвет ссылок*/
+	background:#FF4444; 
     padding:0px 15px; /*добавляем отступ*/
     font-family: arial; /*меняем шрифт*/
     line-height:60px; /*ровняем меню по вертикали*/
@@ -32,6 +33,23 @@ li > a:hover {
 
 li {
 	float: left;
+	/*position: relative;*/
+}
+
+li > ul {
+	position: absolute;
+	top: 60px;
+	display: none;
+	z-index: 20;
+}
+
+li:hover > ul {
+	display: block;
+	width: 250px;
+}
+
+li:hover > ul > li {
+	float: none;
 }
 
 h1 {

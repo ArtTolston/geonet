@@ -24,6 +24,14 @@ class GeonetDB:
 	def addUser(self, login, hash):
 		try:
 			self.__cursor.execute('INSERT INTO users (login, passwd) VALUES (%s, %s);', (login, hash))
+			self.__cursor.execute('INSERT INTO groups (name) VALUES (%s)', (login + '_my_group', ))
+			#добавляем записи в служебную таблицу
+			self.__db.commit()
+			self.__cursor.execute('SELECT id FROM users WHERE login = %s', (login,))
+			usr_id = self.__cursor.fetchone()['id']
+			self.__cursor.execute('SELECT id FROM groups WHERE name = %s', (login + '_my_group',))
+			grp_id = self.__cursor.fetchone()['id']
+			self.__cursor.execute('INSERT INTO service_t (usr, grp) VALUES (%s, %s)', (usr_id, grp_id))
 			print('user seccusfully added')
 			self.__db.commit()
 		except psycopg2.Error as e:
@@ -51,3 +59,13 @@ class GeonetDB:
 	def executeScript(self, script):
 		self.__cursor.execute(script)
 		self.__db.commit()
+
+
+	def getUserGroups(self, user_id):
+		try:
+			self.__cursor.execute('SELECT g.name FROM groups as g JOIN service_t as srv ON g.id = srv.grp WHERE srv.usr = %s', (user_id,))
+			groups = self.__cursor.fetchall()
+			return groups
+		except psycopg2.Error as e:
+			print(e.pgerror)
+			return None

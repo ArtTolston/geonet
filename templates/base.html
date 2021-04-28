@@ -12,6 +12,16 @@
 				<li><a href="/">Главная</a></li>
 				<li><a href="/map">Карта</a></li>
 				<li><a href="/login">Авторизация</a></li>
+				<li><a>Группы</a>
+				{% if loggedin %}
+					<ul>
+					{% for group in groups %}
+						<li><a href="/groups/{{group['name']}}">{{group['name']}}</a></li>
+					{% endfor %}
+					</ul>
+				{% endif %}
+				</li>
+				<li><a href="/profile">Профиль</a></li>
 			</ul>
 		{% endblock %}
 

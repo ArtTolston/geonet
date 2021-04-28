@@ -19,15 +19,20 @@ login_manager = LoginManager(app)
 
 @app.route('/')
 def index():
-   return render_template('base.html')
+	return render_template('base.html', loggedin=current_user, groups=geodb.getUserGroups(user_id=current_user.get_id()))
 
 
 @app.route('/map')
 @login_required
 def map():
 	city='moscow'
-	return render_template('map.html', city=city)
+	return render_template('map.html', city=city, loggedin=current_user, groups=geodb.getUserGroups(user_id=current_user.get_id()))
 
+
+@app.route('/groups/<group_name>')
+@login_required
+def group(group_name):
+	return group_name
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -37,7 +42,7 @@ def login():
 			userLogin = UserLogin().create(user)
 			login_user(userLogin)
 			return redirect(url_for('index'))
-	return render_template('login.html')
+	return render_template('login.html', loggedin=current_user, groups=geodb.getUserGroups(user_id=current_user.get_id()))
 
 @app.route('/logout')
 def logout():
@@ -53,13 +58,13 @@ def register():
 				hash = generate_password_hash(request.form['passwd1'])
 				geodb.addUser(request.form['login'], hash)
 				return redirect(url_for('login'))
-	return render_template('register.html')
+	return render_template('register.html', loggedin=current_user, groups=geodb.getUserGroups(user_id=current_user.get_id()))
 
 
 @app.route('/profile')
 @login_required
 def profile():
-	return render_template('profile.html', user_id=current_user.get_id())
+	return render_template('profile.html', user_id=current_user.get_id(), loggedin=current_user, groups=geodb.getUserGroups(user_id=current_user.get_id()))
 
 
 @login_manager.user_loader
