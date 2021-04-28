@@ -114,10 +114,7 @@ def get_db():
 		g.db = psycopg2.connect(dbname=current_app.config['DATABASE'], user=current_app.config['USER'])
 	return g.db
 
-def create_db():
-    db = psycopg2.connect(user='udk2018', dbname='geonet')
-    with open('schema.sql', 'r') as f:
-        db.cursor().execute(f.read())
+
 
 
 
