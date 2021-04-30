@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Главная
+{% endblock %}
+
+{% block content %}
+<div id="main">
+	<p>Пользователи</p>
+	{% for login in logins %}
+		<p>{{login}}</p>
+	{% endfor %}
+</div>
+{% endblock %}

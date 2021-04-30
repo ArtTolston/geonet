@@ -19,7 +19,7 @@ login_manager = LoginManager(app)
 
 @app.route('/')
 def index():
-	return render_template('base.html', loggedin=current_user, groups=geodb.getUserGroups(user_id=current_user.get_id()))
+	return render_template('main.html', loggedin=current_user, groups=geodb.getUserGroups(user_id=current_user.get_id()), logins=geodb.getUsersLogins())
 
 
 @app.route('/map')
@@ -33,6 +33,21 @@ def map():
 @login_required
 def group(group_name):
 	return group_name
+
+
+@app.route('/addgroup', methods=['GET', 'POST'])
+@login_required
+def addgroup():
+	if request.method == 'POST':
+		group_name = request.form['name']
+		group_users = []
+		group_users.append(current_user.get_login())
+		for i in range(0, len(request.form) - 1):
+			group_users.append(request.form['login' + str(i)])
+		geodb.addGroup(group_name)
+		geodb.addUsersToGroup(group_name ,group_users)
+	return render_template('addgroup.html', loggedin=current_user, groups=geodb.getUserGroups(user_id=current_user.get_id()))
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

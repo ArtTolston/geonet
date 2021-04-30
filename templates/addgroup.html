@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Новая группа
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/other.js')}}"></script>
+{% endblock %}
+
+{% block content %}
+<form id="form" action="/addgroup" method="post">
+	<p><label>Название группы: </label><input type="text" name="name" value="" requiered/></p>
+	<p><label>Добавить участника: </label><input type="text" maxlength="20" name="login0" value=""/></p>
+	<p id="button"><input type="button" value="Еще" onclick="addField()"/></p>
+	<p><input type="submit" value="Создать группу"/></p>
+</form>
+{% endblock %}

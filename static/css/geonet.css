@@ -4,6 +4,16 @@
 	margin-top: 50px;
 }
 
+#main {
+	width:100%;
+}
+
+#main > p {
+	margin-right: 20px;
+	margin-left: auto;
+	text-align: right;
+}
+
 ul {
 	list-style: none;
 	margin: 0;

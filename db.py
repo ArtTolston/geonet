@@ -32,7 +32,6 @@ class GeonetDB:
 			self.__cursor.execute('SELECT id FROM groups WHERE name = %s', (login + '_my_group',))
 			grp_id = self.__cursor.fetchone()['id']
 			self.__cursor.execute('INSERT INTO service_t (usr, grp) VALUES (%s, %s)', (usr_id, grp_id))
-			print('user seccusfully added')
 			self.__db.commit()
 		except psycopg2.Error as e:
 			print(e.pgerror)
@@ -69,3 +68,34 @@ class GeonetDB:
 		except psycopg2.Error as e:
 			print(e.pgerror)
 			return None
+
+
+	def addGroup(self, name):
+		try:
+			self.__cursor.execute('INSERT INTO groups (name) VALUES (%s)', (name, ))
+			self.__db.commit()
+		except psycopg2.Error as e:
+			print(e.pgerror)
+
+
+	def addUsersToGroup(self, name, logins):
+		try:
+			self.__cursor.execute('SELECT id FROM groups WHERE name = %s', (name,))
+			grp_id = self.__cursor.fetchone()['id']
+			for login in logins:
+				self.__cursor.execute('SELECT id FROM users WHERE login = %s', (login,))
+				usr_id = self.__cursor.fetchone()['id']
+				self.__cursor.execute('INSERT INTO service_t (usr, grp) VALUES (%s, %s)', (usr_id, grp_id))
+			self.__db.commit()
+		except psycopg2.Error as e:
+			print(e.pgerror)
+
+
+	def getUsersLogins(self):
+		try:
+			self.__cursor.execute('SELECT login FROM users')
+			logins = [ data['login'] for data in self.__cursor.fetchall()]
+			return logins
+		except psycopg2.Error as e:
+			print(e.pgerror)
+			return False
