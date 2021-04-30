@@ -1,39 +1,41 @@
 import os
-from db import GeonetDB 
+
 import psycopg2 
-from login import UserLogin
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
 from flask import Flask, redirect, url_for, render_template, request, session, g, current_app
-from werkzeug.security import generate_password_hash, check_password_hash
 from flask.cli import with_appcontext
+from werkzeug.security import generate_password_hash, check_password_hash
 
-
-
+from db import GeonetDB
+from login import UserLogin
 
 app = Flask(__name__)
-enviroment_configuration = os.environ['FLASK_CONFIGURATION_SETUP']
-app.config.from_object(enviroment_configuration)
+app.config.from_object(os.environ['FLASK_CONFIGURATION_SETUP'])
 
 login_manager = LoginManager(app)
 
-
 @app.route('/')
 def index():
-	return render_template('main.html', loggedin=current_user, groups=geodb.getUserGroups(user_id=current_user.get_id()), logins=geodb.getUsersLogins())
-
+	return render_template('main.html',
+			loggedin=current_user,
+			groups=geodb.getUserGroups(user_id=current_user.get_id()),
+			logins=geodb.getUsersLogins()
+	)
 
 @app.route('/map')
 @login_required
 def map():
 	city='moscow'
-	return render_template('map.html', city=city, loggedin=current_user, groups=geodb.getUserGroups(user_id=current_user.get_id()))
-
+	return render_template('map.html',
+			city=city,
+			loggedin=current_user,
+			groups=geodb.getUserGroups(user_id=current_user.get_id())
+	)
 
 @app.route('/groups/<group_name>')
 @login_required
 def group(group_name):
 	return group_name
-
 
 @app.route('/addgroup', methods=['GET', 'POST'])
 @login_required
@@ -46,8 +48,10 @@ def addgroup():
 			group_users.append(request.form['login' + str(i)])
 		geodb.addGroup(group_name)
 		geodb.addUsersToGroup(group_name ,group_users)
-	return render_template('addgroup.html', loggedin=current_user, groups=geodb.getUserGroups(user_id=current_user.get_id()))
-
+	return render_template('addgroup.html',
+			loggedin=current_user,
+			groups=geodb.getUserGroups(user_id=current_user.get_id())
+	)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -57,9 +61,13 @@ def login():
 			userLogin = UserLogin().create(user)
 			login_user(userLogin)
 			return redirect(url_for('index'))
-	return render_template('login.html', loggedin=current_user, groups=geodb.getUserGroups(user_id=current_user.get_id()))
+	return render_template('login.html',
+			loggedin=current_user,
+			groups=geodb.getUserGroups(user_id=current_user.get_id())
+	)
 
 @app.route('/logout')
+@login_required
 def logout():
 	logout_user()
 	return redirect(url_for('login'))
@@ -73,13 +81,19 @@ def register():
 				hash = generate_password_hash(request.form['passwd1'])
 				geodb.addUser(request.form['login'], hash)
 				return redirect(url_for('login'))
-	return render_template('register.html', loggedin=current_user, groups=geodb.getUserGroups(user_id=current_user.get_id()))
-
+	return render_template('register.html',
+			loggedin=current_user,
+			groups=geodb.getUserGroups(user_id=current_user.get_id())
+	)
 
 @app.route('/profile')
 @login_required
 def profile():
-	return render_template('profile.html', user_id=current_user.get_id(), loggedin=current_user, groups=geodb.getUserGroups(user_id=current_user.get_id()))
+	return render_template('profile.html',
+			user_id=current_user.get_id(),
+			loggedin=current_user,
+			groups=geodb.getUserGroups(user_id=current_user.get_id())
+	)
 
 
 @login_manager.user_loader
@@ -91,6 +105,7 @@ def load_user(user_id):
 
 
 @app.route('/upload', methods=['POST'])
+@login_required
 def upload():
 	if request.method == 'POST':
 		#description = request.form['description']

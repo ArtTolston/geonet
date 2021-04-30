@@ -49,3 +49,15 @@ function init(location, upload){
 
 
 }
+
+
+
+        var popUpContent = `<div style="position: absolute; background-color: white; z-index:2; border: 1px solid black; border-radius: 5px;">\
+                <form action="${upload}" method="POST" enctype="multipart/form-data">\
+                <p align="center">Описание: <br/><input type="text" name="description"></p>\
+                <p align="center">Фото: <br/><input type="file" name="file" /></p>\
+                <p align="center"><input type="submit", value="Отправить"/></p></form>\
+                <input type="hidden" name="lat" value="${e.latlng.lat.toString()}" />\
+                <input type="hidden" name="lng" value="${e.latlng.lng.toString()}" />\
+                </div>`;
+        marker.bindPopup(popUpContent).openPopup();

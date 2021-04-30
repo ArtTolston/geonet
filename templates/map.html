@@ -7,11 +7,17 @@ Map
 
 
 {% block scripts %}
-    <link rel = "stylesheet" href = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/>
-    <script src = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>  
+<!--<link rel="stylesheet" href="{{ url_for('static', filename='css/leaflet.css') }}"/>
+<script src="{{ url_for('static', filename='js/leaflet.js') }}"></script>-->
+<link rel = "stylesheet" href = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/>
+<script src = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
 {% endblock %}
 
 {% block content %}
 <div id='map'></div>
 <script src = "{{ url_for('static', filename='js/osm.js') }}" type="text/javascript"></script>
+<script type="text/javascript">
+	var upload = "{{ url_for('upload') }}";
+	osmInit(upload);
+</script>
 {% endblock %}
