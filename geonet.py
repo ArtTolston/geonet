@@ -1,4 +1,6 @@
 import os
+import json
+import uuid
 
 import psycopg2 
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
@@ -16,9 +18,10 @@ login_manager = LoginManager(app)
 
 @app.route('/')
 def index():
+	print(current_user)
 	return render_template('main.html',
 			loggedin=current_user,
-			groups=geodb.getUserGroups(user_id=current_user.get_id()),
+			groups=geodb.getUserGroups(user_id=current_user.get_id() if current_user else None),
 			logins=geodb.getUsersLogins()
 	)
 
@@ -29,7 +32,7 @@ def map():
 	return render_template('map.html',
 			city=city,
 			loggedin=current_user,
-			groups=geodb.getUserGroups(user_id=current_user.get_id())
+			groups=geodb.getUserGroups(user_id=current_user.get_id() if current_user.is_authenticated() else None)
 	)
 
 @app.route('/groups/<group_name>')
@@ -50,7 +53,7 @@ def addgroup():
 		geodb.addUsersToGroup(group_name ,group_users)
 	return render_template('addgroup.html',
 			loggedin=current_user,
-			groups=geodb.getUserGroups(user_id=current_user.get_id())
+			groups=geodb.getUserGroups(user_id=current_user.get_id() if current_user else None)
 	)
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -63,7 +66,7 @@ def login():
 			return redirect(url_for('index'))
 	return render_template('login.html',
 			loggedin=current_user,
-			groups=geodb.getUserGroups(user_id=current_user.get_id())
+			groups=geodb.getUserGroups(user_id=current_user.get_id() if current_user else None)
 	)
 
 @app.route('/logout')
@@ -83,18 +86,17 @@ def register():
 				return redirect(url_for('login'))
 	return render_template('register.html',
 			loggedin=current_user,
-			groups=geodb.getUserGroups(user_id=current_user.get_id())
+			groups=geodb.getUserGroups(user_id=current_user.get_id() if current_user else None)
 	)
 
 @app.route('/profile')
 @login_required
 def profile():
 	return render_template('profile.html',
-			user_id=current_user.get_id(),
+			user_id=current_user.get_id() if current_user else None,
 			loggedin=current_user,
-			groups=geodb.getUserGroups(user_id=current_user.get_id())
+			groups=geodb.getUserGroups(user_id=current_user.get_id() if current_user else None)
 	)
-
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -102,28 +104,41 @@ def load_user(user_id):
 	print(user_id)
 	return UserLogin().fromDB(user_id, geodb)
 
-
-
 @app.route('/upload', methods=['POST'])
 @login_required
 def upload():
 	if request.method == 'POST':
-		#description = request.form['description']
-		file = request.files['file']
+		geodb.addEvent(name=request.form['name'],
+				description=request.form['description'],
+				groupId=1,#подправить
+				lat=request.form['lat'],
+				lng=request.form['lng'],
+		)
+		user_id = int(current_user.get_id())
+		event_id = 1
+		media = []
+		for f in request.files.getlist('photo'):
+			name = get_free_name()
+			mediatype = None
+			_, ext = os.path.splitext(f.filename)
+			if ext in ['.jpg', '.jpeg', '.png']:
+				mediatype = 'photo'
+				f.save(os.path.join('static', name + ext))
+				media.append((user_id, event_id, mediatype, name))
+		for f in request.files.getlist('video'):
+			print('i')
+			name = get_free_name()
+			mediatype = None
+			_, ext = os.path.splitext(f.filename)
+			if ext in ['.avi', '.mkv']:
+				mediatype = 'video'
+				f.save(os.path.join('static', name + ext))
+				media.append((user_id, event_id, mediatype, name))
+		geodb.addMedia(media)
+	return 'hello'
 
-		hashs = str(abs(hash(file.read())))[:25] 
-		filename = 'static/' + hashs + '.jpeg'
-		print(hashs)
-		with open(filename, 'wb') as f:
-			f.write(file.read())
-		db.cursor().execute('INSERT INTO images (name) VALUES (%s)', (hashs,));
-		db.commit()
-		cur.close()
-		return redirect(url_for('map', city='moscow'))
-
-
-
-
+		
+	
 
 geodb = None
 @app.before_request
@@ -137,18 +152,18 @@ def close_db(error=None):
 	if hasattr(g, 'db'):
 		g.db.close()
 
-
-
 def get_db():
 	if not hasattr(g, 'db'):
 		g.db = psycopg2.connect(dbname=current_app.config['DATABASE'], user=current_app.config['USER'])
 	return g.db
 
-
-
-
-
-
+def get_free_name():
+	name = str(uuid.uuid4())
+	pathname = os.path.join('static', name)
+	while os.path.exists(pathname):
+		name = str(uuid.uuid4())
+		pathname = os.path.join('static', name)
+	return name
 
 if __name__ == '__main__':
    app.run(debug=True, host='0.0.0.0', port='8000')

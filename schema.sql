@@ -12,13 +12,13 @@ CREATE TABLE users (id serial primary key,
 				login varchar(20) not null,
 				passwd varchar(100) not null,
 				avatar bytea,
-				utime timestamp default current_timestamp);
+				time timestamp default current_timestamp);
 
 
 CREATE TABLE groups (id serial primary key,
 				name varchar(100) not null,
 				description text,
-				gtime timestamp default current_timestamp);
+				time timestamp default current_timestamp);
 
 
 CREATE TABLE service_t (usr int,
@@ -34,21 +34,16 @@ CREATE TABLE events (id serial primary key,
 				grp int references groups (id),
 				longtitude decimal not null,
 				latitude decimal not null,
-				etime timestamp default current_timestamp);
+				time timestamp default current_timestamp);
+
+CREATE TYPE mediatype AS ENUM ('photo', 'video'); 
 
 
-CREATE TABLE photos (id serial primary key,
+CREATE TABLE media (id serial primary key,
 				owner int references users (id),
 				event int references events (id),
-				photo_path text not null,
-				ptime timestamp default current_timestamp);
-
-
-CREATE TABLE videos (id serial primary key,
-				owner int references users (id),
-				event int references events (id),
-				video_path text not null,
-				ptime timestamp default current_timestamp);
-
+				type mediatype not null,
+				path text not null,
+				time timestamp default current_timestamp);
 
 COMMIT;

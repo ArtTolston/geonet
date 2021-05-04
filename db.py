@@ -99,3 +99,34 @@ class GeonetDB:
 		except psycopg2.Error as e:
 			print(e.pgerror)
 			return False
+
+
+	def addEvent(self, name, description, groupId, lat, lng):
+		try:
+			self.__cursor.execute('INSERT INTO events (name, description, grp, longtitude, latitude) VALUES (%s, %s, %s, %s, %s)',
+								(name, description, groupId, lng, lat)
+			)
+			self.__db.commit()
+		except psycopg2.Error as e:
+			print(e.pgerror)
+
+
+	def getEventIdByNameAndGroup(self, name, group):
+		try:
+			self.__cursor.execute('SELECT id FROM events WHERE name = %s AND grp = %s',
+								(name, group)
+			)
+			id = self.__cursor.fetchone()['id']
+			return id
+		except psycopg2.Error as e:
+			print(e.pgerror)
+
+
+	def addMedia(self, media):
+		try:
+			print(media)
+			self.__cursor.executemany('INSERT INTO media (owner, event, type, path) VALUES (%s, %s, %s, %s)', media)
+			self.__db.commit()
+		except psycopg2.Error as e:
+			print(e.pgerror)
+
