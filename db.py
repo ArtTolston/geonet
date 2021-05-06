@@ -62,7 +62,7 @@ class GeonetDB:
 
 	def getUserGroups(self, user_id):
 		try:
-			self.__cursor.execute('SELECT g.name FROM groups as g JOIN service_t as srv ON g.id = srv.grp WHERE srv.usr = %s', (user_id,))
+			self.__cursor.execute('SELECT g.id, g.name FROM groups as g JOIN service_t as srv ON g.id = srv.grp WHERE srv.usr = %s', (user_id,))
 			groups = self.__cursor.fetchall()
 			return groups
 		except psycopg2.Error as e:
@@ -111,10 +111,10 @@ class GeonetDB:
 			print(e.pgerror)
 
 
-	def getEventIdByNameAndGroup(self, name, group):
+	def getEventIdByNameAndGroup(self, name, groupId):
 		try:
 			self.__cursor.execute('SELECT id FROM events WHERE name = %s AND grp = %s',
-								(name, group)
+								(name, groupId)
 			)
 			id = self.__cursor.fetchone()['id']
 			return id

@@ -110,12 +110,12 @@ def upload():
 	if request.method == 'POST':
 		geodb.addEvent(name=request.form['name'],
 				description=request.form['description'],
-				groupId=1,#подправить
+				groupId=request.form['group'],
 				lat=request.form['lat'],
 				lng=request.form['lng'],
 		)
 		user_id = int(current_user.get_id())
-		event_id = 1
+		event_id = geodb.getEventIdByNameAndGroup(name=request.form['name'], groupId=request.form['group'])
 		media = []
 		for f in request.files.getlist('photo'):
 			name = get_free_name()
