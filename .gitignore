@@ -1,8 +1,8 @@
 #файлы конфигурации
 *.cfg
 
-# картинки
-static/*.jpeg
+# медиа
+static/media/*
 
 #кэш
 __pycache__

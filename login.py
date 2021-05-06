@@ -1,6 +1,6 @@
 class UserLogin:
 	def fromDB(self, user_id, geodb):
-		self.__user = geodb.getUser(user_id)
+		self.__user = geodb.get_user(user_id)
 		return self
 
 	def create(self, user):

@@ -21,8 +21,8 @@ def index():
 	print(current_user)
 	return render_template('main.html',
 			loggedin=current_user,
-			groups=geodb.getUserGroups(user_id=current_user.get_id() if current_user else None),
-			logins=geodb.getUsersLogins()
+			groups=geodb.get_user_groups(user_id=current_user.get_id() if current_user else None),
+			logins=geodb.get_users_logins()
 	)
 
 @app.route('/map')
@@ -32,7 +32,7 @@ def map():
 	return render_template('map.html',
 			city=city,
 			loggedin=current_user,
-			groups=geodb.getUserGroups(user_id=current_user.get_id() if current_user.is_authenticated() else None)
+			groups=geodb.get_user_groups(user_id=current_user.get_id() if current_user.is_authenticated() else None)
 	)
 
 @app.route('/groups/<group_name>')
@@ -49,24 +49,24 @@ def addgroup():
 		group_users.append(current_user.get_login())
 		for i in range(0, len(request.form) - 1):
 			group_users.append(request.form['login' + str(i)])
-		geodb.addGroup(group_name)
-		geodb.addUsersToGroup(group_name ,group_users)
+		geodb.add_group(group_name)
+		geodb.add_users_to_group(group_name ,group_users)
 	return render_template('addgroup.html',
 			loggedin=current_user,
-			groups=geodb.getUserGroups(user_id=current_user.get_id() if current_user else None)
+			groups=geodb.get_user_groups(user_id=current_user.get_id() if current_user else None)
 	)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	if request.method == 'POST':
-		user = geodb.getUserByLogin(request.form['login'])
+		user = geodb.get_user_by_login(request.form['login'])
 		if user and check_password_hash(user['passwd'], request.form['passwd']):
 			userLogin = UserLogin().create(user)
 			login_user(userLogin)
 			return redirect(url_for('index'))
 	return render_template('login.html',
 			loggedin=current_user,
-			groups=geodb.getUserGroups(user_id=current_user.get_id() if current_user else None)
+			groups=geodb.get_user_groups(user_id=current_user.get_id() if current_user else None)
 	)
 
 @app.route('/logout')
@@ -79,14 +79,14 @@ def logout():
 def register():
 	if request.method == 'POST':
 		if len(request.form['login']) >= 0 and len(request.form['passwd1']) >= 0 and (request.form['passwd1'] == request.form['passwd2']):
-			if geodb.isFreeLogin(request.form['login']):	
+			if geodb.is_free_login(request.form['login']):	
 				print('reg new user\n')				
 				hash = generate_password_hash(request.form['passwd1'])
-				geodb.addUser(request.form['login'], hash)
+				geodb.add_user(request.form['login'], hash)
 				return redirect(url_for('login'))
 	return render_template('register.html',
 			loggedin=current_user,
-			groups=geodb.getUserGroups(user_id=current_user.get_id() if current_user else None)
+			groups=geodb.get_user_groups(user_id=current_user.get_id() if current_user else None)
 	)
 
 @app.route('/profile')
@@ -95,7 +95,7 @@ def profile():
 	return render_template('profile.html',
 			user_id=current_user.get_id() if current_user else None,
 			loggedin=current_user,
-			groups=geodb.getUserGroups(user_id=current_user.get_id() if current_user else None)
+			groups=geodb.get_user_groups(user_id=current_user.get_id() if current_user else None)
 	)
 
 @login_manager.user_loader
@@ -108,14 +108,15 @@ def load_user(user_id):
 @login_required
 def upload():
 	if request.method == 'POST':
-		geodb.addEvent(name=request.form['name'],
+		print(current_app.config['MEDIA_PATH'])
+		geodb.add_event(name=request.form['name'],
 				description=request.form['description'],
 				groupId=request.form['group'],
 				lat=request.form['lat'],
 				lng=request.form['lng'],
 		)
 		user_id = int(current_user.get_id())
-		event_id = geodb.getEventIdByNameAndGroup(name=request.form['name'], groupId=request.form['group'])
+		event_id = geodb.get_event_id_by_name_and_group(name=request.form['name'], groupId=request.form['group'])
 		media = []
 		for f in request.files.getlist('photo'):
 			name = get_free_name()
@@ -123,7 +124,7 @@ def upload():
 			_, ext = os.path.splitext(f.filename)
 			if ext in ['.jpg', '.jpeg', '.png']:
 				mediatype = 'photo'
-				f.save(os.path.join('static', name + ext))
+				f.save(os.path.join(current_app.config['MEDIA_PATH'], name + ext))
 				media.append((user_id, event_id, mediatype, name))
 		for f in request.files.getlist('video'):
 			print('i')
@@ -132,9 +133,9 @@ def upload():
 			_, ext = os.path.splitext(f.filename)
 			if ext in ['.avi', '.mkv']:
 				mediatype = 'video'
-				f.save(os.path.join('static', name + ext))
+				f.save(os.path.join(current_app.config['MEDIA_PATH'], name + ext))
 				media.append((user_id, event_id, mediatype, name))
-		geodb.addMedia(media)
+		geodb.add_media(media)
 	return 'hello'
 
 		
@@ -159,10 +160,10 @@ def get_db():
 
 def get_free_name():
 	name = str(uuid.uuid4())
-	pathname = os.path.join('static', name)
+	pathname = os.path.join(current_app.config['MEDIA_PATH'], name)
 	while os.path.exists(pathname):
 		name = str(uuid.uuid4())
-		pathname = os.path.join('static', name)
+		pathname = os.path.join(current_app.config['MEDIA_PATH'], name)
 	return name
 
 if __name__ == '__main__':
