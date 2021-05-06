@@ -17,7 +17,7 @@
 					<ul>
 						<li><a href="/addgroup">Создать группу</a></li>
 					{% for group in groups %}
-						<li><a href="/groups/{{group['name']}}">{{group['name']}}</a></li>
+						<li><a href="/groups/{{group['id']}}">{{group['name']}}</a></li>
 					{% endfor %}
 					</ul>
 				{% endif %}

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+Group Info
+{% endblock %}
+
+{% block content %}
+<div>
+	<a href="/map">Показать на карте</a>
+</div>
+
+<div class="group_blocks">
+	<table class="table" border="1">
+		<tr>
+			<th>Пользователи</th>
+		</tr>
+		{% for user in users %}
+		<tr>
+			<td>{{ user['login'] }}</td>
+		</tr>
+		{% endfor %}
+	</table>
+</div>
+<div class="group_blocks">
+	<table class="table" border="1">
+		<tr>
+			<th>События</th>
+			<th>Описание</th>
+		</tr>
+		{% for event in events %}
+		<tr>
+			<td>{{ event['name'] }}</td>
+			<td><p>{{ event['description'] }}</p></td>
+		</tr>
+		{% endfor %}
+	</table>
+</div>
+
+{% endblock %}

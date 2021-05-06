@@ -4,7 +4,7 @@ import uuid
 
 import psycopg2 
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
-from flask import Flask, redirect, url_for, render_template, request, session, g, current_app
+from flask import Flask, redirect, url_for, render_template, request, session, g, current_app, flash
 from flask.cli import with_appcontext
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -28,17 +28,21 @@ def index():
 @app.route('/map')
 @login_required
 def map():
-	city='moscow'
 	return render_template('map.html',
-			city=city,
+			city='moscow',
 			loggedin=current_user,
 			groups=geodb.get_user_groups(user_id=current_user.get_id() if current_user.is_authenticated() else None)
 	)
 
-@app.route('/groups/<group_name>')
+@app.route('/groups/<group_id>')
 @login_required
-def group(group_name):
-	return group_name
+def group(group_id):
+	return render_template('group_info.html',
+			loggedin=current_user,
+			users=geodb.get_users_by_group_id(group_id),
+			events=geodb.get_events_by_group_id(group_id),
+			groups=geodb.get_user_groups(user_id=current_user.get_id() if current_user else None)
+	)
 
 @app.route('/addgroup', methods=['GET', 'POST'])
 @login_required
@@ -108,33 +112,40 @@ def load_user(user_id):
 @login_required
 def upload():
 	if request.method == 'POST':
-		print(current_app.config['MEDIA_PATH'])
+		
 		geodb.add_event(name=request.form['name'],
 				description=request.form['description'],
-				groupId=request.form['group'],
+				group_id=request.form['group'],
 				lat=request.form['lat'],
 				lng=request.form['lng'],
 		)
 		user_id = int(current_user.get_id())
-		event_id = geodb.get_event_id_by_name_and_group(name=request.form['name'], groupId=request.form['group'])
+		event_id = geodb.get_event_id_by_name_and_group(name=request.form['name'], group_id=request.form['group'])
 		media = []
 		for f in request.files.getlist('photo'):
+			if not f.content_length:
+				continue
 			name = get_free_name()
-			mediatype = None
+			mediatype = 'photo'
 			_, ext = os.path.splitext(f.filename)
 			if ext in ['.jpg', '.jpeg', '.png']:
-				mediatype = 'photo'
 				f.save(os.path.join(current_app.config['MEDIA_PATH'], name + ext))
 				media.append((user_id, event_id, mediatype, name))
+			else:
+				flash('Неправильный формат фото')
+				return redirect(url_for('map'))
 		for f in request.files.getlist('video'):
-			print('i')
+			if not f.content_length:
+				continue
 			name = get_free_name()
-			mediatype = None
+			mediatype = 'video'
 			_, ext = os.path.splitext(f.filename)
 			if ext in ['.avi', '.mkv']:
-				mediatype = 'video'
 				f.save(os.path.join(current_app.config['MEDIA_PATH'], name + ext))
 				media.append((user_id, event_id, mediatype, name))
+			else:
+				flash('Неправильный формат видео')
+				return redirect(url_for('map'))
 		geodb.add_media(media)
 	return 'hello'
 

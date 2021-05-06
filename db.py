@@ -101,20 +101,20 @@ class GeonetDB:
 			return False
 
 
-	def add_event(self, name, description, groupId, lat, lng):
+	def add_event(self, name, description, group_id, lat, lng):
 		try:
 			self.__cursor.execute('INSERT INTO events (name, description, grp, longtitude, latitude) VALUES (%s, %s, %s, %s, %s)',
-								(name, description, groupId, lng, lat)
+								(name, description, group_id, lng, lat)
 			)
 			self.__db.commit()
 		except psycopg2.Error as e:
 			print(e.pgerror)
 
 
-	def get_event_id_by_name_and_group(self, name, groupId):
+	def get_event_id_by_name_and_group(self, name, group_id):
 		try:
 			self.__cursor.execute('SELECT id FROM events WHERE name = %s AND grp = %s',
-								(name, groupId)
+								(name, group_id)
 			)
 			id = self.__cursor.fetchone()['id']
 			return id
@@ -124,9 +124,25 @@ class GeonetDB:
 
 	def add_media(self, media):
 		try:
-			print(media)
 			self.__cursor.executemany('INSERT INTO media (owner, event, type, path) VALUES (%s, %s, %s, %s)', media)
 			self.__db.commit()
 		except psycopg2.Error as e:
 			print(e.pgerror)
 
+
+	def get_users_by_group_id(self, group_id):
+		try:
+			self.__cursor.execute('SELECT u.id as id, u.login as login FROM users AS u JOIN service_t as s ON u.id = s.usr WHERE s.grp = %s', (group_id, ))
+			users = self.__cursor.fetchall()
+			return users
+		except psycopg2.Error as e:
+			print(e.pgerror)
+
+
+	def get_events_by_group_id(self, group_id):
+		try:
+			self.__cursor.execute('SELECT * FROM events WHERE grp = %s', (group_id, ))
+			events = self.__cursor.fetchall()
+			return events
+		except psycopg2.Error as e:
+			print(e.pgerror)

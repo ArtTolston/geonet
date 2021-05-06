@@ -78,3 +78,21 @@ h1 {
 .reg_log_form > p {
 	width: 100px;
 }
+
+.flash {
+	border: 1px solid black;
+	background: red;
+	margin-top: 5px;
+	height: 30px;
+	width: 15%;
+}
+
+.group_blocks {
+	float: left;
+	width: 30%;
+}
+
+.table {
+	border: 1;
+	width: 100px;
+}
