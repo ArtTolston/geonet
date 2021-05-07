@@ -18,7 +18,6 @@ login_manager = LoginManager(app)
 
 @app.route('/')
 def index():
-	print(current_user)
 	return render_template('main.html',
 			loggedin=current_user,
 			groups=geodb.get_user_groups(user_id=current_user.get_id() if current_user else None),
@@ -28,11 +27,31 @@ def index():
 @app.route('/map')
 @login_required
 def map():
-	return render_template('map.html',
-			city='moscow',
-			loggedin=current_user,
-			groups=geodb.get_user_groups(user_id=current_user.get_id() if current_user.is_authenticated() else None)
-	)
+	if request.args:
+		if 'group_id' in request.args:
+			if request.args['group_id'] == 0:
+				flash('bad choose')
+			else:
+				events = []
+				for event in geodb.get_events_by_group_id(request.args['group_id']):
+					n_ev = {}
+					for key, value in event.items():
+						if key != 'time' and key != 'grp':
+							n_ev[key] = value
+					events.append(n_ev)
+				return render_template('map.html',
+						city='moscow',
+						loggedin=current_user,
+						groups=geodb.get_user_groups(user_id=current_user.get_id() if current_user.is_authenticated() else None),
+						events=events
+				)
+
+	else:
+		return render_template('map.html',
+				city='moscow',
+				loggedin=current_user,
+				groups=geodb.get_user_groups(user_id=current_user.get_id() if current_user.is_authenticated() else None)
+		)
 
 @app.route('/groups/<group_id>')
 @login_required

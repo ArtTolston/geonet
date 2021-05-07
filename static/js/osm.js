@@ -1,6 +1,6 @@
 var eventLocation;
 
-function osmInit(upload) {
+function osmInit(upload, events) {
     var moscow_location = [55.753995, 37.614069]
 
     var mapOptions = {
@@ -26,4 +26,13 @@ function osmInit(upload) {
         marker.bindPopup(popUpContentDiv).openPopup();
         marker.addTo(map);
     });
+
+
+    for(var i = 0; i < events.length; i++) {
+        var lat = parseFloat(events[i]['latitude']);
+        var lng = parseFloat(events[i]['longtitude']);
+        var marker = new L.Marker([lat, lng]);
+        marker.bindPopup(events[i]['name']).openPopup();
+        marker.addTo(map);
+    }
 }

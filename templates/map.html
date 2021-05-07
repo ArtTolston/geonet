@@ -17,9 +17,9 @@ Map
 {% for msg in get_flashed_messages() %}
 <div class="flash">{{ msg }}</div>
 {% endfor %}
-<form method="GET" action="/index">
-	<select name="group">
-		<option selected>События группы ...</option>
+<form method="GET" action="/map">
+	<select name="group_id">
+		<option value="0" selected>События группы ...</option>
 		{% for group in groups %}
 		<option value="{{ group['id'] }}">События группы {{group['name']}}</option>
 		{% endfor %}
@@ -31,7 +31,16 @@ Map
 <script src = "{{ url_for('static', filename='js/osm.js') }}" type="text/javascript"></script>
 <script type="text/javascript">
 	var upload = "{{ url_for('upload') }}";
-	osmInit(upload);
+	var _events = [];
+	var _event = {};	
+	{% for event in events%}
+		{% for key, value in event.items() %}
+			_event["{{key}}"] = "{{value}}";
+		{% endfor %}
+		_events.push(_event);
+		_event = {};
+	{% endfor %}
+	osmInit(upload, _events);
 </script>
 <div id="addEvent">
 	<form method="POST" action="/upload" enctype="multipart/form-data">
