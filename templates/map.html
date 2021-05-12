@@ -29,7 +29,7 @@ Map
 
 <div id='map'></div>
 <div id="eventInfo">
-	<p id="eventName"></p>
+	<p align="center" id="eventName"></p>
 	<form method="GET" action="/map">
 		<input id="eventId" type="hidden" name="event_id" value=""/>
 		<input type="submit" name="show_media" value="Показать медиа"/>
@@ -68,4 +68,9 @@ Map
         <input id="lng" name="lng" type="hidden" value=""/>
     </form>
 </div>
+{% if photos %}
+<div>
+	<p>HELLO</p>
+</div>
+{% endif %}
 {% endblock %}

@@ -47,7 +47,28 @@ def map():
 				)
 		elif 'show_media' in request.args and 'event_id' in request.args:
 			if request.args['show_media'] == 'Показать медиа':
-				print("show")
+				print('show')
+				media = geodb.get_media_by_event_id(request.args['event_id'])
+				event_name = geodb.get_event_by_id(request.args['event_id'])['name']
+				photos = []
+				videos = []
+				for m in media:
+					print('here')
+					if m['type'] == 'photo':
+						photos.append(m['path'])
+						print(m['path'])
+					elif m['type'] == 'video':
+						videos.append(m['path'])
+					else:
+						pass
+				return render_template('map.html',
+						city='moscow',
+						loggedin=current_user,
+						groups=geodb.get_user_groups(user_id=current_user.get_id() if current_user.is_authenticated() else None),
+						photos=photos,
+						videos=videos,
+						event_name=event_name,
+				)
 
 	return render_template('map.html',
 			city='moscow',
@@ -132,8 +153,7 @@ def load_user(user_id):
 @app.route('/upload', methods=['POST'])
 @login_required
 def upload():
-	if request.method == 'POST':
-		
+	if request.method == 'POST':		
 		geodb.add_event(name=request.form['name'],
 				description=request.form['description'],
 				group_id=request.form['group'],
@@ -144,7 +164,7 @@ def upload():
 		event_id = geodb.get_event_id_by_name_and_group(name=request.form['name'], group_id=request.form['group'])
 		media = []
 		for f in request.files.getlist('photo'):
-			if not f.content_length:
+			if f.filename == '':
 				continue
 			name = get_free_name()
 			mediatype = 'photo'
@@ -154,9 +174,10 @@ def upload():
 				media.append((user_id, event_id, mediatype, name))
 			else:
 				flash('Неправильный формат фото')
+				print('Wrong photo format')
 				return redirect(url_for('map'))
 		for f in request.files.getlist('video'):
-			if not f.content_length:
+			if f.filename == '':
 				continue
 			name = get_free_name()
 			mediatype = 'video'
@@ -166,8 +187,12 @@ def upload():
 				media.append((user_id, event_id, mediatype, name))
 			else:
 				flash('Неправильный формат видео')
+				print('Wrong video format')
 				return redirect(url_for('map'))
-		geodb.add_media(media)
+		if media:
+			print('add_media')
+			geodb.add_media(media)
+		return redirect(url_for('map'))
 	return 'hello'
 
 		

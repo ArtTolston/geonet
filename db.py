@@ -122,6 +122,17 @@ class GeonetDB:
 			print(e.pgerror)
 
 
+	def get_event_by_id(self, event_id):
+		try:
+			self.__cursor.execute('SELECT * FROM events WHERE id = %s',
+								(event_id,)
+			)
+			event = self.__cursor.fetchone()
+			return event
+		except psycopg2.Error as e:
+			print(e.pgerror)
+
+
 	def add_media(self, media):
 		try:
 			self.__cursor.executemany('INSERT INTO media (owner, event, type, path) VALUES (%s, %s, %s, %s)', media)
@@ -149,4 +160,9 @@ class GeonetDB:
 
 
 	def get_media_by_event_id(self, event_id):
-		pass
+		try:
+			self.__cursor.execute('SELECT m.type AS type, m.path AS path FROM events AS e JOIN media AS m ON e.id = m.event WHERE e.id = %s', (event_id,))
+			media = self.__cursor.fetchall()
+			return media
+		except psycopg2.Error as e:
+			print(e.pgerror)
