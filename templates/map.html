@@ -70,7 +70,13 @@ Map
 </div>
 {% if photos %}
 <div>
-	<p>HELLO</p>
+	{% for photo_name in photos%}
+	<img src="{{ url_for(media_path, filename=photo_name)}}" height=20% width=10%/>
+	{% endfor %}
 </div>
 {% endif %}
+<video height=20% width=30% controls>
+	<source src="/static/media/video1.mp4" type="video/mp4">
+</video>
+
 {% endblock %}

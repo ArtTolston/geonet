@@ -50,15 +50,17 @@ def map():
 				print('show')
 				media = geodb.get_media_by_event_id(request.args['event_id'])
 				event_name = geodb.get_event_by_id(request.args['event_id'])['name']
+				media_path = current_app.config['MEDIA_PATH']
+				main, media_folder = os.path.split(media_path)
 				photos = []
 				videos = []
 				for m in media:
 					print('here')
 					if m['type'] == 'photo':
-						photos.append(m['path'])
+						photos.append(os.path.join(media_folder, m['path']))
 						print(m['path'])
 					elif m['type'] == 'video':
-						videos.append(m['path'])
+						videos.append(os.path.join(media_folder, m['path']))
 					else:
 						pass
 				return render_template('map.html',
@@ -68,6 +70,7 @@ def map():
 						photos=photos,
 						videos=videos,
 						event_name=event_name,
+						media_path=main,
 				)
 
 	return render_template('map.html',
@@ -171,7 +174,7 @@ def upload():
 			_, ext = os.path.splitext(f.filename)
 			if ext in ['.jpg', '.jpeg', '.png']:
 				f.save(os.path.join(current_app.config['MEDIA_PATH'], name + ext))
-				media.append((user_id, event_id, mediatype, name))
+				media.append((user_id, event_id, mediatype, name + ext))
 			else:
 				flash('Неправильный формат фото')
 				print('Wrong photo format')
@@ -184,7 +187,7 @@ def upload():
 			_, ext = os.path.splitext(f.filename)
 			if ext in ['.avi', '.mkv']:
 				f.save(os.path.join(current_app.config['MEDIA_PATH'], name + ext))
-				media.append((user_id, event_id, mediatype, name))
+				media.append((user_id, event_id, mediatype, name + ext))
 			else:
 				flash('Неправильный формат видео')
 				print('Wrong video format')
