@@ -32,7 +32,12 @@ function osmInit(upload, events) {
         var lat = parseFloat(events[i]['latitude']);
         var lng = parseFloat(events[i]['longtitude']);
         var marker = new L.Marker([lat, lng]);
-        marker.bindPopup(events[i]['name']).openPopup();
+        document.getElementById('eventName').innerHTML = events[i]['name'];
+        document.getElementById('eventId').value = events[i]['id'];
+        var eventInfo = document.getElementById('eventInfo');
+        var popUpContentInfo = eventInfo.cloneNode(true);
+        popUpContentInfo.style.display = 'block';
+        marker.bindPopup(popUpContentInfo).openPopup();
         marker.addTo(map);
     }
 }

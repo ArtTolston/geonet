@@ -146,3 +146,7 @@ class GeonetDB:
 			return events
 		except psycopg2.Error as e:
 			print(e.pgerror)
+
+
+	def get_media_by_event_id(self, event_id):
+		pass

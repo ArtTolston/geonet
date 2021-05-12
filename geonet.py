@@ -43,15 +43,17 @@ def map():
 						city='moscow',
 						loggedin=current_user,
 						groups=geodb.get_user_groups(user_id=current_user.get_id() if current_user.is_authenticated() else None),
-						events=events
+						events=geodb.get_events_by_group_id(request.args['group_id'])
 				)
+		elif 'show_media' in request.args and 'event_id' in request.args:
+			if request.args['show_media'] == 'Показать медиа':
+				print("show")
 
-	else:
-		return render_template('map.html',
-				city='moscow',
-				loggedin=current_user,
-				groups=geodb.get_user_groups(user_id=current_user.get_id() if current_user.is_authenticated() else None)
-		)
+	return render_template('map.html',
+			city='moscow',
+			loggedin=current_user,
+			groups=geodb.get_user_groups(user_id=current_user.get_id() if current_user.is_authenticated() else None)
+	)
 
 @app.route('/groups/<group_id>')
 @login_required
