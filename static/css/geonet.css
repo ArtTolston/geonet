@@ -2,6 +2,7 @@
 	width:100%;
 	height:600px;
 	margin-top: 50px;
+	float:none;
 }
 
 #main {
@@ -108,3 +109,21 @@ h1 {
 	width: 100px;
 }
 
+img {
+	width:300px;
+	transition:width 0.5s ease; 
+}
+
+#photo:active { 
+	width: 50%;
+	height:80%;
+}
+
+#media {
+	width:20%;
+	height:600px;
+	float:left;
+	margin-right: 50px;
+	margin-top: 35px;
+	overflow: auto;
+}

@@ -60,7 +60,8 @@ def map():
 						photos.append(os.path.join(media_folder, m['path']))
 						print(m['path'])
 					elif m['type'] == 'video':
-						videos.append(os.path.join(media_folder, m['path']))
+						_, ext = os.path.splitext(m['path'])
+						videos.append({'path': os.path.join(media_folder, m['path']), 'ext': ext[1:]})
 					else:
 						pass
 				return render_template('map.html',
@@ -185,7 +186,7 @@ def upload():
 			name = get_free_name()
 			mediatype = 'video'
 			_, ext = os.path.splitext(f.filename)
-			if ext in ['.avi', '.mkv']:
+			if ext in ['.avi', '.mkv', '.mp4', '.ogg']:
 				f.save(os.path.join(current_app.config['MEDIA_PATH'], name + ext))
 				media.append((user_id, event_id, mediatype, name + ext))
 			else:

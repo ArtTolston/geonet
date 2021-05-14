@@ -27,7 +27,37 @@ Map
 	<input type="submit" value="Показать">
 </form>
 
-<div id='map'></div>
+{% if photos or videos %}
+<div id="media">
+	<h4 align="center">{{ event_name }}</h4>
+	{% if photos %}
+	<div class="media">
+		<hr>
+		{% for photo_name in photos %}
+		<div style="border:1px solid black;" onclick="openPhoto(document.getElement)">
+			<img id="photo" src="{{ url_for(media_path, filename=photo_name)}}" height=30% width=15%/>
+		</div>
+		{% endfor %}
+		<hr>
+	</div>
+	{% endif %}
+	{% if videos %}
+	<div class="media">
+		<hr>
+		{% for photo_name in videos %}
+		<div style="border:1px solid black;">
+			<video width=100% controls>
+				<source src="{{ url_for(media_path, filename=photo_name['path']) }}" type="video/{{photo_name['ext']}}">
+			</video>
+		</div>
+		{% endfor %}
+		<hr>
+	</div>
+	{% endif %}
+</div>
+{% endif %}
+
+<div id="map"{% if photos or videos%} style="width:75%;" {% endif %}></div>
 <div id="eventInfo">
 	<p align="center" id="eventName"></p>
 	<form method="GET" action="/map">
@@ -68,15 +98,7 @@ Map
         <input id="lng" name="lng" type="hidden" value=""/>
     </form>
 </div>
-{% if photos %}
-<div>
-	{% for photo_name in photos%}
-	<img src="{{ url_for(media_path, filename=photo_name)}}" height=20% width=10%/>
-	{% endfor %}
-</div>
-{% endif %}
-<video height=20% width=30% controls>
-	<source src="/static/media/video1.mp4" type="video/mp4">
-</video>
+
+
 
 {% endblock %}
