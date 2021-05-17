@@ -33,7 +33,11 @@ function osmInit(upload, events) {
         var lng = parseFloat(events[i]['longtitude']);
         var marker = new L.Marker([lat, lng]);
         document.getElementById('eventName').innerHTML = events[i]['name'];
-        document.getElementById('eventId').value = events[i]['id'];
+        var elems = document.getElementsByClassName('eventId');
+        for(var j = 0; j < elems.length; j++){
+            alert(j);
+            elems[j].value = events[i]['id'];
+        }
         var eventInfo = document.getElementById('eventInfo');
         var popUpContentInfo = eventInfo.cloneNode(true);
         popUpContentInfo.style.display = 'block';

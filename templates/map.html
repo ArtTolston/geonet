@@ -34,8 +34,8 @@ Map
 	<div class="media">
 		<hr>
 		{% for photo_name in photos %}
-		<div style="border:1px solid black;" onclick="openPhoto(document.getElement)">
-			<img id="photo" src="{{ url_for(media_path, filename=photo_name)}}" height=30% width=15%/>
+		<div style="border:1px solid black;">
+			<img id="{{photo_name}}" src="{{ url_for(media_path, filename=photo_name)}}" width=100%/>
 		</div>
 		{% endfor %}
 		<hr>
@@ -57,15 +57,31 @@ Map
 </div>
 {% endif %}
 
+<div id="myModal" class="modal">
+  <!-- The Close Button -->
+  <span class="close">&times;</span>
+  <!-- Modal Content (The Image) -->
+  <img class="modal-content" id="img01">
+  <!-- Modal Caption (Image Text) -->
+  <div id="caption"></div>
+</div>
+
 <div id="map"{% if photos or videos%} style="width:75%;" {% endif %}></div>
+
 <div id="eventInfo">
 	<p align="center" id="eventName"></p>
 	<form method="GET" action="/map">
-		<input id="eventId" type="hidden" name="event_id" value=""/>
+		<input class="eventId" type="hidden" name="event_id" value=""/>
 		<input type="submit" name="show_media" value="Показать медиа"/>
 	</form>
+	<form method="GET" action="/update_event_info">
+		<input class="eventId" type="hidden" name="event_id" value=""/>
+		<input type="submit" name="update_event_info" value="Обновить информацию о событии">
+	</form>
 </div>
+
 <script src = "{{ url_for('static', filename='js/osm.js') }}" type="text/javascript"></script>
+<script src = "{{ url_for('static', filename='js/modalImages.js') }}" type="text/javascript"></script>
 <script type="text/javascript">
 	var upload = "{{ url_for('upload') }}";
 	var _events = [];
@@ -77,6 +93,11 @@ Map
 		_events.push(_event);
 		_event = {};
 	{% endfor %}
+	var photo_ids = [];
+	{% for photo_name in photos %}
+		photo_ids.push("{{photo_name}}")
+	{% endfor %}
+	//modalImagesInit(photo_ids);
 	osmInit(upload, _events);
 </script>
 <div id="addEvent">

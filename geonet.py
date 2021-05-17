@@ -49,7 +49,7 @@ def map():
 			if request.args['show_media'] == 'Показать медиа':
 				print('show')
 				media = geodb.get_media_by_event_id(request.args['event_id'])
-				event_name = geodb.get_event_by_id(request.args['event_id'])['name']
+				event = geodb.get_event_by_id(request.args['event_id'])
 				media_path = current_app.config['MEDIA_PATH']
 				main, media_folder = os.path.split(media_path)
 				photos = []
@@ -68,9 +68,10 @@ def map():
 						city='moscow',
 						loggedin=current_user,
 						groups=geodb.get_user_groups(user_id=current_user.get_id() if current_user.is_authenticated() else None),
+						events=geodb.get_events_by_group_id(event['grp']),
 						photos=photos,
 						videos=videos,
-						event_name=event_name,
+						event_name=event['name'],
 						media_path=main,
 				)
 
@@ -79,6 +80,38 @@ def map():
 			loggedin=current_user,
 			groups=geodb.get_user_groups(user_id=current_user.get_id() if current_user.is_authenticated() else None)
 	)
+
+@app.route('/update_event_info')
+@login_required
+def update_event_info():
+	if request.args:
+		if 'update_event_info' in request.args and 'event_id' in request.args:
+			media = geodb.get_media_by_event_id(request.args['event_id'])
+			event = geodb.get_event_by_id(request.args['event_id'])
+			media_path = current_app.config['MEDIA_PATH']
+			main, media_folder = os.path.split(media_path)
+			photos = []
+			videos = []
+			for m in media:
+				print('here')
+				if m['type'] == 'photo':
+					photos.append(os.path.join(media_folder, m['path']))
+					print(m['path'])
+				elif m['type'] == 'video':
+					_, ext = os.path.splitext(m['path'])
+					videos.append({'path': os.path.join(media_folder, m['path']), 'ext': ext[1:]})
+				else:
+					pass
+			return render_template('update_event_info.html',
+						loggedin=current_user,
+						groups=geodb.get_user_groups(user_id=current_user.get_id() if current_user.is_authenticated() else None),
+						photos=photos,
+						videos=videos,
+						event_name=event['name'],
+						event_description=event['description'],
+						media_path=main)
+	else:
+		pass
 
 @app.route('/groups/<group_id>')
 @login_required
