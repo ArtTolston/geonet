@@ -8,3 +8,33 @@ Update Event Info
 {% block scripts %}
 <script src = "{{ url_for('static', filename='js/update_event_info.js') }}" type="text/javascript"></script>
 {% endblock %}
+
+{% block content %}
+
+{% if photos or videos %}
+<div id="update_media">
+	<h4 align="center">{{ event_name }}</h4>
+	{% if photos %}
+	<div class="update_media">
+		{% for photo_name in photos %}
+		<div class="photo" vertical-align="middle">
+			<img id="{{photo_name}}" src="{{ url_for(media_path, filename=photo_name)}}" width=100%/>
+		</div>
+		{% endfor %}
+	</div>
+	{% endif %}
+	{% if videos %}
+	<div class="update_media">
+		{% for photo_name in videos %}
+		<div class="video">
+			<video width=100% vertical-align="middle" controls>
+				<source src="{{ url_for(media_path, filename=photo_name['path']) }}" type="video/{{photo_name['ext']}}">
+			</video>
+		</div>
+		{% endfor %}
+	</div>
+	{% endif %}
+</div>
+{% endif %}
+
+{% endblock %}

@@ -126,3 +126,24 @@ h1 {
 	margin-top: 50px;
 	overflow: auto;
 }
+
+#update_media {
+	margin-top: 50px;
+}
+
+.photo {
+	border:1px solid black;
+	max-width:400px;
+	height: 100%;
+	float:left;
+	background-color: black;
+}
+
+.video {
+	border:1px solid black;
+	max-width:400px;
+	height: 100%;
+	float:left;
+	vertical-align:bottom;
+	background-color: black;
+}

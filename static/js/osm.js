@@ -35,7 +35,6 @@ function osmInit(upload, events) {
         document.getElementById('eventName').innerHTML = events[i]['name'];
         var elems = document.getElementsByClassName('eventId');
         for(var j = 0; j < elems.length; j++){
-            alert(j);
             elems[j].value = events[i]['id'];
         }
         var eventInfo = document.getElementById('eventInfo');
